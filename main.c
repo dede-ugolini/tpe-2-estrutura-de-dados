@@ -51,3 +51,40 @@ void pop(Node **head) {
   temp->prev->next = NULL;
   free(temp);
 }
+
+void printListForward(Node *head) {
+  Node *temp = head;
+  printf("Forward List: ");
+  printf("NULL->");
+  while (temp != NULL) {
+    printf("%d->", temp->data);
+    temp = temp->next;
+    if (temp == NULL) {
+      printf("NULL");
+    }
+  }
+  printf("\n");
+}
+
+void printListReverse(Node *head) {
+  Node *temp = head;
+  if (temp == NULL) {
+    printf("The list is empty.\n");
+    return;
+  }
+  // Move to the end of the list
+  while (temp->next != NULL) {
+    temp = temp->next;
+  }
+  // Traverse backwards
+  printf("Reverse List: ");
+  printf("NULL<-");
+  while (temp != NULL) {
+    printf("%d<-", temp->data);
+    temp = temp->prev;
+    if (temp == NULL) {
+      printf("NULL");
+    }
+  }
+  printf("\n");
+}
