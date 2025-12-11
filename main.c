@@ -118,6 +118,60 @@ void shift(Node **head) {
   free(temp);
 }
 
+void insertAtPosition(Node **head, int data, int position) {
+  if (position < 1) {
+    printf("Position should be >= 1.\n");
+    return;
+  }
+
+  // if we are inserting at head
+  if (position == 1) {
+    unShift(head, data);
+    return;
+  }
+  Node *newNode = createNode(data);
+  Node *temp = *head;
+  for (int i = 1; temp != NULL && i < position - 1; i++) {
+    temp = temp->next;
+  }
+  if (temp == NULL) {
+    printf("Position greater than the number of nodes.\n");
+    return;
+  }
+  newNode->next = temp->next;
+  newNode->prev = temp;
+  if (temp->next != NULL) {
+    temp->next->prev = newNode;
+  }
+  temp->next = newNode;
+}
+
+void deleteAtPosition(Node **head, int position) {
+  if (*head == NULL) {
+    printf("The list is already empty.\n");
+    return;
+  }
+  Node *temp = *head;
+  if (position == 1) {
+    shift(head);
+    return;
+  }
+  for (int i = 1; temp != NULL && i < position; i++) {
+    temp = temp->next;
+  }
+  if (temp == NULL) {
+    printf("Position is greater than the number of "
+           "nodes.\n");
+    return;
+  }
+  if (temp->next != NULL) {
+    temp->next->prev = temp->prev;
+  }
+  if (temp->prev != NULL) {
+    temp->prev->next = temp->next;
+  }
+  free(temp);
+}
 void menu(Node *head) {
 
   int option = 0;
