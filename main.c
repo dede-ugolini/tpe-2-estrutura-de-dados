@@ -88,3 +88,32 @@ void printListReverse(Node *head) {
   }
   printf("\n");
 }
+
+// Função para inserir um elemento no inicio da lista
+void unShift(Node **head, int data) {
+  // creating new node
+  Node *newNode = createNode(data);
+
+  // check if DLL is empty
+  if (*head == NULL) {
+    *head = newNode;
+    return;
+  }
+  newNode->next = *head;
+  (*head)->prev = newNode;
+  *head = newNode;
+}
+
+// Função para remover um elemento do inicio da lista
+void shift(Node **head) {
+  if (*head == NULL) {
+    printf("The list is already empty.\n");
+    return;
+  }
+  Node *temp = *head;
+  *head = (*head)->next;
+  if (*head != NULL) {
+    (*head)->prev = NULL;
+  }
+  free(temp);
+}
