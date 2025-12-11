@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 typedef struct Node {
@@ -29,4 +30,24 @@ void push(Node **head, int data) {
   }
   temp->next = newNode;
   newNode->prev = temp;
+}
+
+// Função que remove o último node da lista
+void pop(Node **head) {
+  if (*head == NULL) {
+    printf("The list is already empty.\n");
+    return;
+  }
+
+  Node *temp = *head;
+  if (temp->next == NULL) {
+    *head = NULL;
+    free(temp);
+    return;
+  }
+  while (temp->next != NULL) {
+    temp = temp->next;
+  }
+  temp->prev->next = NULL;
+  free(temp);
 }
