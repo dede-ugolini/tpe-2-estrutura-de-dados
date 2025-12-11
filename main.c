@@ -117,3 +117,70 @@ void shift(Node **head) {
   }
   free(temp);
 }
+
+void menu(Node *head) {
+
+  int option = 0;
+  do {
+    printf("============ Hello World ===============\n");
+    printf("1 - pop (remover o último node da lista.)\n");
+    printf("2 - push (adicionar um node ao final da lista.)\n");
+    printf("3 - shift (remover primeiro node da lista.)\n");
+    printf("4 - unShift (adicionar um node ao início da lista.)\n");
+    printf("5 - inserir valor em determinada posição\n");
+    printf("6 - excluir valor em determinada posição\n");
+    printf("7 - printar lista de frente para trás\n");
+    printf("8 - printar lista de trás para frente\n");
+    printf("9 - ordenar a lista em ordem crescente\n");
+    printf("10 - ordenar a lista em ordem decrescente\n");
+
+    int data = 0;
+    int position = 0;
+
+    printf("\nEscolha uma opção.\n");
+    scanf("%d", &option);
+
+    switch (option) {
+    case 1:
+      pop(&head);
+      break;
+    case 2:
+      printf("Digite o valor que o node vai armazenar.");
+      scanf("%d", &data);
+      push(&head, data);
+      break;
+    case 3:
+      shift(&head);
+      break;
+    case 4:
+      printf("Digite o valor que o node vai armazenar.");
+      scanf("%d", &data);
+      unShift(&head, data);
+      break;
+    case 5:
+      printf("Digite o valor que o node vai armazenar.");
+      scanf("%d", &data);
+      printf("Digite a posição do node.");
+      scanf("%d", &position);
+      insertAtPosition(&head, data, position);
+      break;
+    case 6:
+      printf("Digite a posição do node.");
+      scanf("%d", &position);
+      deleteAtPosition(&head, position);
+      break;
+    case 7:
+      printListForward(head);
+      break;
+    case 8:
+      printListReverse(head);
+      break;
+    case 0:
+      exit(EXIT_SUCCESS);
+      break;
+    default:
+      fputs("Opção não reconhecida", stderr);
+      break;
+    }
+  } while (option != 0);
+}
