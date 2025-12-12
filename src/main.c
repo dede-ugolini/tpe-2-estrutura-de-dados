@@ -4,7 +4,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct Node {
   int data;
@@ -175,20 +174,19 @@ void deleteAtPosition(Node **head, int position) {
   free(temp);
 }
 
-Node *bubbleSort(Node *head) {
+Node *bubbleSortCrescente(Node *head) {
   if (head == NULL) {
     return head;
   }
 
   bool swaped;
-  Node *current;
   Node *last;
+  Node *current;
 
   do {
     swaped = false;
     current = head;
-
-    while (current->next != last) {
+    while (current != last) {
       if (current->data > current->next->data) {
 
         int tmp = current->data;
@@ -198,7 +196,41 @@ Node *bubbleSort(Node *head) {
       }
       current = current->next;
     }
-    last = current;
+  } while (swaped);
+
+  return head;
+}
+
+Node *bubbleSortDecrescente(Node *head) {
+  if (head == NULL) {
+    return head;
+  }
+
+  Node *last;
+
+  Node *tmp = head;
+
+  while (tmp != NULL) {
+    last = tmp;
+    tmp = tmp->next;
+  }
+
+  bool swaped;
+  Node *current;
+
+  do {
+    swaped = false;
+    current = head;
+    while (current != last) {
+      if (current->data < current->next->data) {
+
+        int tmp = current->data;
+        current->data = current->next->data;
+        current->next->data = tmp;
+        swaped = true;
+      }
+      current = current->next;
+    }
   } while (swaped);
 
   return head;
@@ -219,6 +251,7 @@ void menu(Node *head) {
     printf("8 - printar lista de trás para frente\n");
     printf("9 - ordenar a lista em ordem crescente\n");
     printf("10 - ordenar a lista em ordem decrescente\n");
+    printf("0 - Sair");
 
     int data = 0;
     int position = 0;
@@ -231,7 +264,7 @@ void menu(Node *head) {
       pop(&head);
       break;
     case 2:
-      printf("Digite o valor que o node vai armazenar.");
+      printf("Digite o valor que o node vai armazenar: ");
       scanf("%d", &data);
       push(&head, data);
       break;
@@ -239,19 +272,19 @@ void menu(Node *head) {
       shift(&head);
       break;
     case 4:
-      printf("Digite o valor que o node vai armazenar.");
+      printf("Digite o valor que o node vai armazenar: ");
       scanf("%d", &data);
       unShift(&head, data);
       break;
     case 5:
-      printf("Digite o valor que o node vai armazenar.");
+      printf("Digite o valor que o node vai armazenar: ");
       scanf("%d", &data);
       printf("Digite a posição do node.");
       scanf("%d", &position);
       insertAtPosition(&head, data, position);
       break;
     case 6:
-      printf("Digite a posição do node.");
+      printf("Digite a posição do node: ");
       scanf("%d", &position);
       deleteAtPosition(&head, position);
       break;
@@ -262,7 +295,10 @@ void menu(Node *head) {
       printListReverse(head);
       break;
     case 9:
-      bubbleSort(head);
+      bubbleSortCrescente(head);
+      break;
+    case 10:
+      bubbleSortDecrescente(head);
       break;
     case 0:
       SUCESS("Encerrando...");
@@ -276,8 +312,6 @@ void menu(Node *head) {
 
 int main(int argc, char *argv[]) {
   Node *head = NULL;
-  // menu(head);
-  head = bubbleSort(head);
-  printListForward(head);
+  menu(head);
   return EXIT_SUCCESS;
 }
