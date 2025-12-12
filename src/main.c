@@ -176,19 +176,19 @@ void deleteAtPosition(Node **head, int position) {
 }
 
 void bubbleSort(Node **head) {
-  if (head == NULL) {
+  if (head == NULL || *head == NULL) {
     return;
   }
 
   bool swaped;
-  Node *current = malloc(sizeof(Node));
-  Node *last = malloc(sizeof(Node));
+  Node *current;
+  Node *last;
 
   do {
     swaped = false;
     current = *head;
 
-    while (current->next != last) {
+    while (current->next != NULL) {
       if (current->data > current->next->data) {
 
         int tmp = current->data;
