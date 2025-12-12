@@ -175,18 +175,18 @@ void deleteAtPosition(Node **head, int position) {
   free(temp);
 }
 
-void bubbleSort(Node **head) {
+Node *bubbleSort(Node *head) {
   if (head == NULL) {
-    return;
+    return head;
   }
 
   bool swaped;
-  Node *current = malloc(sizeof(Node));
-  Node *last = malloc(sizeof(Node));
+  Node *current;
+  Node *last;
 
   do {
     swaped = false;
-    current = *head;
+    current = head;
 
     while (current->next != last) {
       if (current->data > current->next->data) {
@@ -201,7 +201,7 @@ void bubbleSort(Node **head) {
     last = current;
   } while (swaped);
 
-  return;
+  return head;
 }
 
 void menu(Node *head) {
@@ -262,11 +262,10 @@ void menu(Node *head) {
       printListReverse(head);
       break;
     case 9:
-      bubbleSort(&head);
+      bubbleSort(head);
       break;
     case 0:
       SUCESS("Encerrando...");
-      exit(EXIT_SUCCESS);
       break;
     default:
       fputs("Opção não reconhecida", stderr);
@@ -277,6 +276,8 @@ void menu(Node *head) {
 
 int main(int argc, char *argv[]) {
   Node *head = NULL;
-  menu(head);
+  // menu(head);
+  head = bubbleSort(head);
+  printListForward(head);
   return EXIT_SUCCESS;
 }
