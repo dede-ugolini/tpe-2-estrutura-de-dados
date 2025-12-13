@@ -1,4 +1,17 @@
-# Listas Encadeadas + Pilha ou Fila + Algoritmo de Ordenação
+## Listas Encadeadas + Pilha ou Fila + Algoritmo de Ordenação
+
+Para executar:
+
+```sh
+make
+./src/main.bin
+```
+
+Para excluir binário:
+
+```sh
+make clean
+```
 
 O grupo deverá implementar uma aplicação que utilize lista encadeada como estrutura
 base para armazenar dados.
