@@ -180,13 +180,13 @@ Node *bubbleSortCrescente(Node *head) {
   }
 
   bool swaped;
-  Node *last;
+  Node *last = NULL;
   Node *current;
 
   do {
     swaped = false;
     current = head;
-    while (current != last) {
+    while (current->next != last) {
       if (current->data > current->next->data) {
 
         int tmp = current->data;
@@ -206,22 +206,14 @@ Node *bubbleSortDecrescente(Node *head) {
     return head;
   }
 
-  Node *last;
-
-  Node *tmp = head;
-
-  while (tmp != NULL) {
-    last = tmp;
-    tmp = tmp->next;
-  }
-
   bool swaped;
+  Node *last = NULL;
   Node *current;
 
   do {
     swaped = false;
     current = head;
-    while (current != last) {
+    while (current->next != last) {
       if (current->data < current->next->data) {
 
         int tmp = current->data;
