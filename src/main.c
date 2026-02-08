@@ -21,6 +21,13 @@ typedef struct Node {
   struct Node *prev;
 } Node;
 
+typedef void (*command_fn)(Node **head);
+
+typedef struct {
+  const char *name;
+  command_fn fn;
+} Command;
+
 Node *createNode(int data) {
   Node *newNode = (Node *)malloc(sizeof(Node));
   newNode->data = data;
@@ -350,6 +357,42 @@ static void usage() {
   puts("exit\t\t encerrar programa");
 }
 
+void cmd_pop(Node **head) { pop(head); }
+
+void cmd_shift(Node **head) { shift(head); }
+
+void cmd_print(Node **head) { printListForward(*head); }
+
+void cmd_sort(Node **head) { bubbleSortCrescente(*head); }
+
+void cmd_fill(Node **head) { fill(*head); }
+
+void cmd_exit(Node **head) {
+  SUCESS("Encerrando...");
+  freeAll(*head);
+  exit(EXIT_SUCCESS);
+}
+
+void cmd_help(Node **head) { usage(); }
+
+Command commands[] = {
+    {"help", cmd_help},   {"exit", cmd_exit}, {"pop", cmd_pop},
+    {"shift", cmd_shift}, {"fill", cmd_fill}, {"sort", cmd_sort},
+    {"print", cmd_print},
+};
+
+int execute_command(const char *input, Node **head) {
+  size_t count = sizeof(commands) / sizeof(commands[0]);
+
+  for (size_t i = 0; i < count; i++) {
+    if ((strcmp(input, commands[i].name)) == 0) {
+      commands[i].fn(head);
+      return 1;
+    }
+  }
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
 
   Node *head = NULL;
@@ -359,6 +402,20 @@ int main(int argc, char *argv[]) {
   add_history(line);
 
   while (line != NULL) {
+    if (!execute_command(line, &head)) {
+      fprintf(stderr,
+              "'%s' não é um comando valido. Digite help para ver a lista de "
+              "comandos",
+              line);
+    }
+    free((void *)line);
+    line = readline(":> ");
+    if (line) {
+      add_history(line);
+    }
+  }
+
+  /* while (line != NULL) {
     if ((strcmp(line, "help")) == 0) {
       usage();
     } else if ((strcmp(line, "exit")) == 0) {
@@ -386,7 +443,7 @@ int main(int argc, char *argv[]) {
     }
     line = readline(":> ");
     add_history(line);
-  }
+  } */
 
   return EXIT_SUCCESS;
 }
