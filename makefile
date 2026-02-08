@@ -1,16 +1,16 @@
-
 CC = gcc
 
 SRC := $(wildcard src/*.c)
-BIN := $(SRC:.c=.bin)
+BIN := $(patsubst src/%.c,bin/%.bin,$(SRC))
 
 .PHONY: all clean
+all: bin $(BIN)
 
-all: $(BIN)
+bin:
+	mkdir -p bin
 
-%.bin: %.c
-	$(CC) $< -o $@
+bin/%.bin: src/%.c
+	$(CC) $< -o $@ -lreadline
 
 clean:
-	rm -f $(BIN)
-
+	rm -f bin/*.bin
