@@ -5,7 +5,15 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+
+#ifndef MACRO
+#include <readline/history.h>
+#include <readline/readline.h>
+#endif /* ifndef MACRO */
+
+#define PROG_NAME "tpe"
 
 typedef struct Node {
   int data;
@@ -327,8 +335,58 @@ void menu(Node *head) {
   } while (option != 0);
 }
 
+static void usage() {
+  printf("Usage: %s\n", PROG_NAME);
+  puts("Comando\t Opção\t Descrição");
+  puts("pop\t\t remover o último node da lista");
+  puts("push\t\t adicionar um node ao final da lista");
+  puts("shift\t\t remover primeiro node da lista");
+  puts("unshift\t\t adicionar um node ao inicio da lista");
+  puts("delete\t[n]\t remover node na posição n");
+  puts("insert");
+  puts("print");
+  puts("sort");
+  puts("fill\t\t preencher a lista com números aleatórios");
+  puts("exit\t\t encerrar programa");
+}
+
 int main(int argc, char *argv[]) {
+
   Node *head = NULL;
-  menu(head);
+  const char *line;
+  puts("Digite help");
+  line = readline(":> ");
+  add_history(line);
+
+  while (line != NULL) {
+    if ((strcmp(line, "help")) == 0) {
+      usage();
+    } else if ((strcmp(line, "exit")) == 0) {
+      SUCESS("Encerrando...");
+      freeAll(head);
+      free((void *)line);
+      exit(EXIT_SUCCESS);
+    } else if ((strcmp(line, "push")) == 0) {
+    } else if ((strcmp(line, "pop")) == 0) {
+      pop(&head);
+    } else if ((strcmp(line, "unshif")) == 0) {
+    } else if ((strcmp(line, "shift")) == 0) {
+      shift(&head);
+    } else if ((strcmp(line, "fill")) == 0) {
+      fill(head);
+    } else if ((strcmp(line, "sort")) == 0) {
+      bubbleSortCrescente(head);
+    } else if ((strcmp(line, "print")) == 0) {
+      printListForward(head);
+    } else {
+      fprintf(stderr,
+              "\"%s\" não é um comando valido. Digite help para ver a lista de "
+              "comandos\n",
+              line);
+    }
+    line = readline(":> ");
+    add_history(line);
+  }
+
   return EXIT_SUCCESS;
 }
