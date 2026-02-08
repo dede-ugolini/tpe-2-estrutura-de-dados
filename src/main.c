@@ -2,8 +2,10 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct Node {
   int data;
@@ -228,6 +230,24 @@ Node *bubbleSortDecrescente(Node *head) {
   return head;
 }
 
+void freeAll(Node *head) {
+  while (head != NULL) {
+    Node *tmp = head->next;
+    free(head);
+    head = tmp;
+  }
+}
+
+void fill(Node *head) {
+  srand(time(NULL));
+  Node *newNode = createNode(rand() % 100);
+  if (head == NULL) {
+    head = newNode;
+  }
+  for (int i = 0; i < 30; i++) {
+    push(&head, rand() % 100);
+  }
+}
 void menu(Node *head) {
 
   int option = 0;
@@ -243,6 +263,7 @@ void menu(Node *head) {
     printf("8 - printar lista de trás para frente\n");
     printf("9 - ordenar a lista em ordem crescente\n");
     printf("10 - ordenar a lista em ordem decrescente\n");
+    printf("11 - preencher a lista com numeros aleatorios\n");
     printf("0 - Sair");
 
     int data = 0;
@@ -292,11 +313,15 @@ void menu(Node *head) {
     case 10:
       bubbleSortDecrescente(head);
       break;
+    case 11:
+      fill(head);
+      break;
     case 0:
       SUCESS("Encerrando...");
+      freeAll(head);
       break;
     default:
-      fputs("Opção não reconhecida", stderr);
+      ERROR("Opção não reconhecida.");
       break;
     }
   } while (option != 0);
