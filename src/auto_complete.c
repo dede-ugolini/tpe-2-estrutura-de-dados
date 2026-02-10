@@ -1,56 +1,10 @@
-#include <stdbool.h>
-#include <stdio.h>
+#include "auto_complete.h"
 
-#include <readline/history.h>
-#include <readline/readline.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "auto_complete.h"
-
-static int usage(char *);
-static int quit(char *);
-static int add(char *);
-static int size(char *);
-
-Command commands[] = {
-    {"help", usage, "Display this text"},
-    {"quit", quit, "Exit program"},
-    {"add", add, "Add to 5"},
-    {"size", size, "Size of command list"},
-};
-
-static bool done = false;
-static int elements_list =
-    (sizeof(commands) /
-     sizeof(commands[0])); // Quantidade de elementos na lista de comandos
-
-static int usage(char *arg) {
-  puts("Usage\n");
-  for (int i = 0; i < elements_list; i++) {
-    printf("%s\t%s\n", commands[i].name, commands[i].doc);
-  }
-  return 0;
-};
-
-static int quit(char *arg) {
-  puts("Bye");
-  done = true;
-  return 0;
-}
-
-static int add(char *arg) {
-  int i = atoi(arg);
-  i += 5;
-  printf("%d\n", i);
-  return 0;
-}
-
-static int size(char *arg) {
-  size_t len = sizeof(commands) / sizeof(commands[0]);
-  printf("%zu: elements in command list\n", len);
-  return 0;
-}
+Command *commands;
 
 char *dupstr(char *s) {
   char *r = malloc(strlen(s) + 1);
@@ -86,13 +40,15 @@ char **fileman_completion(const char *text, int start, int end) {
   return matches;
 }
 
-void initialize_readline(char *progname) {
+void initialize_readline(char *progname, Command *list) {
   rl_readline_name = progname;
 
   rl_attempted_completion_function = fileman_completion;
+
+  commands = list;
 }
 
-Command *find_command(char *name) {
+static Command *find_command(char *name) {
   register int i;
 
   for (i = 0; commands[i].name; i++) {

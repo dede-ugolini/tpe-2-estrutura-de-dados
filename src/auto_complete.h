@@ -15,6 +15,6 @@ char *command_generator(const char *text, int state);
 
 char **fileman_completion(const char *text, int start, int end);
 
-void initialize_readline(char *progname);
+void initialize_readline(char *progname, Command *comands);
 
 int execute_line(char *line);
