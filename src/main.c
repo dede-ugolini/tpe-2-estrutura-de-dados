@@ -405,7 +405,7 @@ int main(int argc, char *argv[]) {
     if (!execute_command(line, &head)) {
       fprintf(stderr,
               "'%s' não é um comando valido. Digite help para ver a lista de "
-              "comandos",
+              "comandos\n",
               line);
     }
     free((void *)line);
