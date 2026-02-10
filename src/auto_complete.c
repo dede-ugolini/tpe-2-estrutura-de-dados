@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdio.h>
 
 #include <readline/history.h>
@@ -7,26 +6,36 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-  char *name;
-  rl_icpfunc_t *func;
-  char *doc;
-} Command;
+#include "auto_complete.h"
+
+static int usage(char *);
+static int quit(char *);
+static int add(char *);
+static int size(char *);
+
+Command commands[] = {
+    {"help", usage, "Display this text"},
+    {"quit", quit, "Exit program"},
+    {"add", add, "Add to 5"},
+    {"size", size, "Size of command list"},
+};
 
 static bool done = false;
+static int elements_list =
+    (sizeof(commands) /
+     sizeof(commands[0])); // Quantidade de elementos na lista de comandos
 
 static int usage(char *arg) {
-  puts("Usage");
-  done = true;
+  puts("Usage\n");
+  for (int i = 0; i < elements_list; i++) {
+    printf("%s\t%s\n", commands[i].name, commands[i].doc);
+  }
   return 0;
 };
 
 static int quit(char *arg) {
-  if (arg) {
-    printf("%lu: len of arg\n", strlen(arg));
-    printf("%lu: sizeof arg\n", sizeof(*arg));
-    printf("[%s]: quit\n", arg);
-  }
+  puts("Bye");
+  done = true;
   return 0;
 }
 
@@ -37,17 +46,7 @@ static int add(char *arg) {
   return 0;
 }
 
-static int size(char *arg);
-
-Command commands[] = {
-    {"help", usage, "Display this text"},
-    {"quit", quit, "Exit program"},
-    {"add", add, "Add to 5"},
-    {"size", size, "Size of command list"},
-};
-
 static int size(char *arg) {
-
   size_t len = sizeof(commands) / sizeof(commands[0]);
   printf("%zu: elements in command list\n", len);
   return 0;
@@ -59,7 +58,7 @@ char *dupstr(char *s) {
   return r;
 }
 
-static char *command_generator(const char *text, int state) {
+char *command_generator(const char *text, int state) {
   static int index, len;
   char *name;
 
@@ -78,7 +77,7 @@ static char *command_generator(const char *text, int state) {
   return ((char *)NULL);
 }
 
-static char **fileman_completion(const char *text, int start, int end) {
+char **fileman_completion(const char *text, int start, int end) {
   char **matches = NULL;
 
   if (start == 0) {
@@ -87,7 +86,7 @@ static char **fileman_completion(const char *text, int start, int end) {
   return matches;
 }
 
-static void initialize_readline(char *progname) {
+void initialize_readline(char *progname) {
   rl_readline_name = progname;
 
   rl_attempted_completion_function = fileman_completion;
@@ -136,21 +135,4 @@ int execute_line(char *line) {
   word = line + i;
 
   return ((*(command->func))(word));
-}
-
-int main(int argc, char *argv[]) {
-  char *line;
-  initialize_readline(argv[0]);
-
-  while (!done) {
-
-    line = readline(":> ");
-
-    if (strlen(line)) {
-      add_history(line);
-      execute_line(line);
-    }
-    free(line);
-  }
-  return EXIT_SUCCESS;
 }
