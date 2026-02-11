@@ -1,9 +1,15 @@
+#include "auto_complete.h"
 #include "colors.h"
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define PROG_NAME "tpe"
 
 typedef struct Node {
   int data;
@@ -228,82 +234,129 @@ Node *bubbleSortDecrescente(Node *head) {
   return head;
 }
 
-void menu(Node *head) {
+void freeAll(Node *head) {
+  while (head != NULL) {
+    Node *tmp = head->next;
+    free(head);
+    head = tmp;
+  }
+}
 
-  int option = 0;
-  do {
-    printf("============ Hello World ===============\n");
-    printf("1 - pop (remover o último node da lista.)\n");
-    printf("2 - push (adicionar um node ao final da lista.)\n");
-    printf("3 - shift (remover primeiro node da lista.)\n");
-    printf("4 - unShift (adicionar um node ao início da lista.)\n");
-    printf("5 - inserir valor em determinada posição\n");
-    printf("6 - excluir valor em determinada posição\n");
-    printf("7 - printar lista de frente para trás\n");
-    printf("8 - printar lista de trás para frente\n");
-    printf("9 - ordenar a lista em ordem crescente\n");
-    printf("10 - ordenar a lista em ordem decrescente\n");
-    printf("0 - Sair");
+void fill(Node *head) {
+  srand(time(NULL));
+  Node *newNode = createNode(rand() % 100);
+  if (head == NULL) {
+    head = newNode;
+  }
+  for (int i = 0; i < 30; i++) {
+    push(&head, rand() % 100);
+  }
+}
 
-    int data = 0;
-    int position = 0;
+Node *head = NULL;
 
-    printf("\nEscolha uma opção.\n");
-    scanf("%d", &option);
+static int help(char *arg);
+static int quit(char *arg);
+static int cm_print(char *arg);
+static int cm_push(char *arg);
+static int cm_pop(char *arg);
+static int cm_shift(char *arg);
+static int cm_unshift(char *arg);
+static int cm_delete(char *arg);
+static int cm_sort(char *arg);
+static int cm_insert(char *arg);
+static int cm_sort(char *arg);
 
-    switch (option) {
-    case 1:
-      pop(&head);
-      break;
-    case 2:
-      printf("Digite o valor que o node vai armazenar: ");
-      scanf("%d", &data);
-      push(&head, data);
-      break;
-    case 3:
-      shift(&head);
-      break;
-    case 4:
-      printf("Digite o valor que o node vai armazenar: ");
-      scanf("%d", &data);
-      unShift(&head, data);
-      break;
-    case 5:
-      printf("Digite o valor que o node vai armazenar: ");
-      scanf("%d", &data);
-      printf("Digite a posição do node.");
-      scanf("%d", &position);
-      insertAtPosition(&head, data, position);
-      break;
-    case 6:
-      printf("Digite a posição do node: ");
-      scanf("%d", &position);
-      deleteAtPosition(&head, position);
-      break;
-    case 7:
-      printListForward(head);
-      break;
-    case 8:
-      printListReverse(head);
-      break;
-    case 9:
-      bubbleSortCrescente(head);
-      break;
-    case 10:
-      bubbleSortDecrescente(head);
-      break;
-    case 0:
-      SUCESS("Encerrando...");
-      break;
-    default:
-      fputs("Opção não reconhecida", stderr);
-      break;
-    }
-  } while (option != 0);
+Command command_list[] = {
+    {"help", help, "See this message"},
+    {"quit", quit, "Fechar o programa"},
+    {"exit", quit, "Fechar o programa"},
+    {"pop", cm_pop, "Remover node do fim da lista"},
+    {"push", cm_push, "Adicionar node ao final da lista"},
+    {"shift", cm_shift, "Remover um node do inicio da lista"},
+    {"unshift", cm_unshift, "Adicionar um node no inicio da lista"},
+    {"fill"},
+    {"delete"},
+    {"print", cm_print, "Printar lista"},
+    {"sort"},
+};
+
+// FIX: Corrigir erro de segmentation fault
+static int cm_sort(char *arg) {
+  head = bubbleSortCrescente(head);
+  return 0;
+}
+
+static int cm_unshift(char *arg) {
+  if (!strlen(arg)) {
+    puts("Falta argumento");
+    return -1;
+  } else {
+    int data = atoi(arg);
+    unShift(&head, data);
+    return 0;
+  }
+}
+
+static int cm_shift(char *arg) {
+  shift(&head);
+  return 0;
+}
+
+static int cm_pop(char *arg) {
+  pop(&head);
+  return 0;
+}
+
+static int cm_push(char *arg) {
+  if (!strlen(arg)) {
+    puts("Falta argumento");
+    return -1;
+  } else {
+    int data = atoi(arg);
+    push(&head, data);
+  }
+  return 0;
+}
+
+static int cm_print(char *arg) {
+  printListForward(head);
+  return 0;
+}
+
+static int help(char *arg) {
+  printf("Usage of program\n");
+  int size = sizeof(command_list) / sizeof(command_list[0]);
+  for (int i = 0; i < size; i++) {
+    printf("%s\t%s\t\n", command_list[i].name, command_list[i].doc);
+  }
+  return 0;
+}
+
+static int quit(char *arg) {
+  puts("Bye");
+  freeAll(head);
+  exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[]) {
-  Node *head = NULL;
-  menu(head);
+
+  initialize_readline(argv[0], command_list);
+
+  char *line;
+
+  puts("Digite help");
+
+  while (true) {
+    line = readline(":> ");
+
+    if (strlen(line)) {
+      add_history(line);
+    }
+
+    execute_line(line);
+    free(line);
+  }
+
   return EXIT_SUCCESS;
 }

@@ -1,16 +1,30 @@
-
-CC = gcc
+CC      = gcc
+CFLAGS  = -Wall -Wextra -g -Iinclude
+LDFLAGS = -lreadline
 
 SRC := $(wildcard src/*.c)
-BIN := $(SRC:.c=.bin)
+OBJ := $(patsubst src/%.c,obj/%.o,$(SRC))
+
+BIN := bin/app
 
 .PHONY: all clean
 
 all: $(BIN)
 
-%.bin: %.c
-	$(CC) $< -o $@
+# Linkagem final
+$(BIN): $(OBJ) | bin
+	$(CC) $(OBJ) -o $@ $(LDFLAGS)
+
+# Compilação de cada .c -> .o
+obj/%.o: src/%.c | obj
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Diretórios
+bin:
+	mkdir -p bin
+
+obj:
+	mkdir -p obj
 
 clean:
-	rm -f $(BIN)
-
+	rm -rf obj bin
