@@ -253,21 +253,42 @@ void fill(Node *head) {
   }
 }
 
+Node *head = NULL;
+
 static int help(char *arg);
 static int quit(char *arg);
+static int cm_print(char *arg);
+static int cm_push(char *arg);
 
 Command command_list[] = {
     {"help", help, "See this message"},
     {"quit", quit, "Fechar o programa"},
+    {"exit", quit, "Fechar o programa"},
     {"pop"},
-    {"push"},
+    {"push", cm_push, "Adicionar node ao final da lista"},
     {"shift"},
     {"unshift"},
     {"fill"},
     {"delete"},
-    {"print"},
+    {"print", cm_print, "Printar lista"},
     {"sort"},
 };
+
+static int cm_push(char *arg) {
+  if (!strlen(arg)) {
+    puts("Falta argumento");
+    return -1;
+  } else {
+    int data = atoi(arg);
+    push(&head, data);
+  }
+  return 0;
+}
+
+static int cm_print(char *arg) {
+  printListForward(head);
+  return 0;
+}
 
 static int help(char *arg) {
   printf("Usage of program\n");
@@ -288,7 +309,6 @@ int main(int argc, char *argv[]) {
 
   initialize_readline(argv[0], command_list);
 
-  Node *head = NULL;
   char *line;
 
   puts("Digite help");
