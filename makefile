@@ -13,4 +13,4 @@ bin/%.bin: src/%.c
 	$(CC) $< -o $@ -lreadline
 
 clean:
-	rm -f bin/*.bin
+	rm -f bin/*.bin bin/*.out
