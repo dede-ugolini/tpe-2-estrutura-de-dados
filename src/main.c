@@ -253,14 +253,12 @@ void fill(Node *head) {
   }
 }
 
-static int help(char *arg) {
-  printf("Usage of program\n");
-  return 0;
-}
+static int help(char *arg);
+static int quit(char *arg);
 
-Command commands[] = {
+Command command_list[] = {
     {"help", help, "See this message"},
-    {"quit"},
+    {"quit", quit, "Fechar o programa"},
     {"pop"},
     {"push"},
     {"shift"},
@@ -269,12 +267,26 @@ Command commands[] = {
     {"delete"},
     {"print"},
     {"sort"},
-    {NULL, NULL, NULL},
 };
+
+static int help(char *arg) {
+  printf("Usage of program\n");
+  int size = sizeof(command_list) / sizeof(command_list[0]);
+  for (int i = 0; i < size; i++) {
+    printf("%s\t%s\t\n", command_list[i].name, command_list[i].doc);
+  }
+  return 0;
+}
+
+static int quit(char *arg) {
+  puts("Bye");
+  // TODO: Adicionar suporte a função freall() para desalocar memória do node
+  exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char *argv[]) {
 
-  initialize_readline(argv[0], commands);
+  initialize_readline(argv[0], command_list);
 
   Node *head = NULL;
   char *line;
