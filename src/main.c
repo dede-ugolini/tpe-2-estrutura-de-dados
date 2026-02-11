@@ -259,20 +259,54 @@ static int help(char *arg);
 static int quit(char *arg);
 static int cm_print(char *arg);
 static int cm_push(char *arg);
+static int cm_pop(char *arg);
+static int cm_shift(char *arg);
+static int cm_unshift(char *arg);
+static int cm_delete(char *arg);
+static int cm_sort(char *arg);
+static int cm_insert(char *arg);
+static int cm_sort(char *arg);
 
 Command command_list[] = {
     {"help", help, "See this message"},
     {"quit", quit, "Fechar o programa"},
     {"exit", quit, "Fechar o programa"},
-    {"pop"},
+    {"pop", cm_pop, "Remover node do fim da lista"},
     {"push", cm_push, "Adicionar node ao final da lista"},
-    {"shift"},
-    {"unshift"},
+    {"shift", cm_shift, "Remover um node do inicio da lista"},
+    {"unshift", cm_unshift, "Adicionar um node no inicio da lista"},
     {"fill"},
     {"delete"},
     {"print", cm_print, "Printar lista"},
     {"sort"},
 };
+
+// FIX: Corrigir erro de segmentation fault
+static int cm_sort(char *arg) {
+  head = bubbleSortCrescente(head);
+  return 0;
+}
+
+static int cm_unshift(char *arg) {
+  if (!strlen(arg)) {
+    puts("Falta argumento");
+    return -1;
+  } else {
+    int data = atoi(arg);
+    unShift(&head, data);
+    return 0;
+  }
+}
+
+static int cm_shift(char *arg) {
+  shift(&head);
+  return 0;
+}
+
+static int cm_pop(char *arg) {
+  pop(&head);
+  return 0;
+}
 
 static int cm_push(char *arg) {
   if (!strlen(arg)) {
@@ -301,7 +335,7 @@ static int help(char *arg) {
 
 static int quit(char *arg) {
   puts("Bye");
-  // TODO: Adicionar suporte a função freall() para desalocar memória do node
+  freeAll(head);
   exit(EXIT_SUCCESS);
 }
 
