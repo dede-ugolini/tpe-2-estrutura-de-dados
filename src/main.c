@@ -1,3 +1,4 @@
+#include "auto_complete.h"
 #include "colors.h"
 
 #include <stdbool.h>
@@ -7,11 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#ifndef MACRO
-#include <readline/history.h>
-#include <readline/readline.h>
-#endif /* ifndef MACRO */
 
 #define PROG_NAME "tpe"
 
@@ -23,10 +19,10 @@ typedef struct Node {
 
 typedef void (*command_fn)(Node **head);
 
-typedef struct {
+/* typedef struct {
   const char *name;
   command_fn fn;
-} Command;
+} Command; */
 
 Node *createNode(int data) {
   Node *newNode = (Node *)malloc(sizeof(Node));
@@ -375,12 +371,12 @@ void cmd_exit(Node **head) {
 
 void cmd_help(Node **head) { usage(); }
 
-Command commands[] = {
+/* Command commands[] = {
     {"help", cmd_help},   {"exit", cmd_exit}, {"pop", cmd_pop},
     {"shift", cmd_shift}, {"fill", cmd_fill}, {"sort", cmd_sort},
     {"print", cmd_print},
-};
-
+}; */
+/*
 int execute_command(const char *input, Node **head) {
   size_t count = sizeof(commands) / sizeof(commands[0]);
 
@@ -391,59 +387,47 @@ int execute_command(const char *input, Node **head) {
     }
   }
   return 0;
+} */
+
+static int help(char *arg) {
+  printf("Usage of program\n");
+  return 0;
 }
 
 int main(int argc, char *argv[]) {
 
-  Node *head = NULL;
-  const char *line;
-  puts("Digite help");
-  line = readline(":> ");
-  add_history(line);
+  printf("%s\n", argv[0]);
+  Command commands[] = {
+      {"help", help, "See this message"},
+      {"quit"},
+      {"pop"},
+      {"push"},
+      {"shift"},
+      {"unshift"},
+      {"fill"},
+      {"delete"},
+      {"print"},
+      {"sort"},
+      {NULL, NULL, NULL},
+  };
 
-  while (line != NULL) {
-    if (!execute_command(line, &head)) {
-      fprintf(stderr,
-              "'%s' não é um comando valido. Digite help para ver a lista de "
-              "comandos\n",
-              line);
-    }
-    free((void *)line);
+  initialize_readline(argv[0], commands);
+
+  Node *head = NULL;
+  char *line;
+
+  puts("Digite help");
+
+  while (true) {
     line = readline(":> ");
-    if (line) {
+
+    if (strlen(line)) {
       add_history(line);
     }
-  }
 
-  /* while (line != NULL) {
-    if ((strcmp(line, "help")) == 0) {
-      usage();
-    } else if ((strcmp(line, "exit")) == 0) {
-      SUCESS("Encerrando...");
-      freeAll(head);
-      free((void *)line);
-      exit(EXIT_SUCCESS);
-    } else if ((strcmp(line, "push")) == 0) {
-    } else if ((strcmp(line, "pop")) == 0) {
-      pop(&head);
-    } else if ((strcmp(line, "unshif")) == 0) {
-    } else if ((strcmp(line, "shift")) == 0) {
-      shift(&head);
-    } else if ((strcmp(line, "fill")) == 0) {
-      fill(head);
-    } else if ((strcmp(line, "sort")) == 0) {
-      bubbleSortCrescente(head);
-    } else if ((strcmp(line, "print")) == 0) {
-      printListForward(head);
-    } else {
-      fprintf(stderr,
-              "\"%s\" não é um comando valido. Digite help para ver a lista de "
-              "comandos\n",
-              line);
-    }
-    line = readline(":> ");
-    add_history(line);
-  } */
+    execute_line(line);
+    free(line);
+  }
 
   return EXIT_SUCCESS;
 }
