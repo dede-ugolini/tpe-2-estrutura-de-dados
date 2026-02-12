@@ -1,6 +1,8 @@
 #include "auto_complete.h"
 #include "colors.h"
 
+#include <ctype.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -266,6 +268,8 @@ static int cm_delete(char *arg);
 static int cm_sort(char *arg);
 static int cm_insert(char *arg);
 static int cm_sort(char *arg);
+static int cm_fill(char *arg);
+static int cm_insert(char *arg);
 
 Command command_list[] = {
     {"help", help, "See this message"},
@@ -275,15 +279,177 @@ Command command_list[] = {
     {"push", cm_push, "Adicionar node ao final da lista"},
     {"shift", cm_shift, "Remover um node do inicio da lista"},
     {"unshift", cm_unshift, "Adicionar um node no inicio da lista"},
-    {"fill"},
-    {"delete"},
+    {"fill", cm_fill, "Preencher com números aleatorios"},
+    {"delete", cm_delete, "Inserir um node em uma posição"},
     {"print", cm_print, "Printar lista"},
-    {"sort"},
+    {"sort", cm_sort, "Ordenar lista"},
+    {"insert", cm_insert, "Inserir node em uma posição específica"},
 };
 
-// FIX: Corrigir erro de segmentation fault
+static int cm_insert(char *arg) {
+  if (!arg || !*arg) {
+    puts("É necessário um argumento");
+    return 1;
+  } else {
+
+    int i = 0, spaces = 0;
+    while (arg[i] != '\0') {
+      if (isspace(arg[i])) {
+        spaces++;
+        i++;
+      } else {
+        i++;
+      }
+    }
+
+    char *string_parsed[spaces];
+
+    char *token = strtok(arg, " \t\n");
+    i = 0;
+
+    while (token) {
+      printf("%s\n", token);
+      token = strtok(NULL, " ");
+      strcpy(string_parsed[i], token);
+      i++;
+    }
+  }
+
+  // dead code
+  if (!arg || !*arg) {
+    puts("è necessário um argumento");
+    return 1;
+  } else {
+
+    int i = 0, spaces = 0;
+    int size = 1;
+
+    while (arg[i] != '\0') {
+      if (isspace(arg[i])) {
+        i++;
+        size++;
+        spaces++;
+      } else {
+        i++;
+        size++;
+      }
+    }
+    puts("ok primeiro while");
+
+    for (i = 0; i < size; i++) {
+      printf("%c", arg[i]);
+    }
+    printf("\n");
+
+    puts("ok primeiro for");
+
+    char arg2[size];
+    strcpy(arg2, arg);
+    char *string_parsed[spaces];
+    char string[size];
+    i = 0;
+    int j = 0, k = 0;
+
+    while (arg2[i] != '\0') {
+      if (isspace(arg2[i])) {
+        strncpy(string_parsed[j], string, k);
+        j++;
+        i++;
+        k = 0;
+      } else {
+        string[k] = arg2[i];
+        k++;
+        i++;
+      }
+    }
+
+    for (i = 0; i < spaces; i++) {
+      printf("%s ", string_parsed[i]);
+    }
+    printf("\n");
+    return 0;
+  }
+
+  printf("%s\n", arg);
+
+  int i = 0;
+  int j = 0;
+  int k = 0;
+
+  char *string_parsed[24];
+  char string[128];
+
+  while (arg[i] != '\0') {
+    if (isspace(arg[i])) {
+      puts("space");
+      string_parsed[j] = string;
+      j++;
+      k = 0;
+      i++;
+    } else {
+      string[k] = arg[i];
+      k++;
+      i++;
+    }
+  }
+  puts("Parsed ok");
+
+  // strtok(char *, const char *)
+
+  /*   int size = sizeof(string_parsed) / sizeof(string_parsed[0]);
+
+    for (int i = 0; i < size; i++) {
+      printf("%s\n", string_parsed[i]);
+    } */
+
+  return 0;
+}
+
+static int cm_fill(char *arg) { return 0; }
+
+static int cm_delete(char *arg) {
+  if (!strlen(arg)) {
+    puts("É necessário um argumento");
+    return 1;
+  } else {
+    int index = atoi(arg);
+    deleteAtPosition(&head, index);
+  }
+  return 0;
+}
+
+static void my_sort(Node **head) {
+  if (*head == NULL) {
+    return;
+  }
+  Node *tmp = *head;
+
+  bool swaped;
+  Node *last = NULL;
+  Node *current;
+
+  do {
+    swaped = false;
+    current = *head;
+    while (current->next != last) {
+      if (current->data > current->next->data) {
+        int tmp = current->data;
+        current->data = current->next->data;
+        current->next->data = tmp;
+        swaped = true;
+      }
+      current = current->next;
+    }
+  } while (swaped);
+}
+
+static int cm_my_sort(char *arg) {
+  my_sort(&head);
+  return 0;
+}
+
 static int cm_sort(char *arg) {
-  head = bubbleSortCrescente(head);
+  bubbleSortCrescente(head);
   return 0;
 }
 
