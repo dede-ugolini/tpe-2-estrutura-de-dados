@@ -244,14 +244,10 @@ void freeAll(Node *head) {
   }
 }
 
-void fill(Node *head) {
+void fill(Node **head, int count) {
   srand(time(NULL));
-  Node *newNode = createNode(rand() % 100);
-  if (head == NULL) {
-    head = newNode;
-  }
-  for (int i = 0; i < 30; i++) {
-    push(&head, rand() % 100);
+  for (int i = 0; i < count; i++) {
+    push(head, rand() % 999);
   }
 }
 
@@ -405,7 +401,15 @@ static int cm_insert(char *arg) {
   return 0;
 }
 
-static int cm_fill(char *arg) { return 0; }
+static int cm_fill(char *arg) {
+  if (arg || *arg) {
+    int count = atoi(arg);
+    fill(&head, count);
+    return 0;
+  }
+  fill(&head, 10);
+  return 0;
+}
 
 static int cm_delete(char *arg) {
   if (!strlen(arg)) {
@@ -499,16 +503,16 @@ static void pop_recursive(Node **head, int count) {
 }
 
 static int cm_pop(char *arg) {
-  if (arg || *arg) {
-    int count = atoi(arg);
-    if (count <= 0) {
-      ERROR("Opção inválida");
-      return -1;
-    }
-    pop_recursive(&head, -1);
+  if (!strlen(arg)) {
+    pop(&head);
     return 0;
   }
-  pop(&head);
+  int count = atoi(arg);
+  if (count <= 0) {
+    ERROR("Opção inválida");
+    return -1;
+  }
+  pop_recursive(&head, count);
   return 0;
 }
 
@@ -538,7 +542,7 @@ static int help(char *arg) {
 }
 
 static int quit(char *arg) {
-  puts("Bye");
+  SUCESS("Bye");
   freeAll(head);
   exit(EXIT_SUCCESS);
 }
