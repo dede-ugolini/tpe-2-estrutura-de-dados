@@ -469,7 +469,45 @@ static int cm_shift(char *arg) {
   return 0;
 }
 
+// TODO: Adicionar suporte a head e tail para deixar o algortimo mais eficiente
+// para que não seja mais necessario percorrer toda a lista
+static void pop_recursive(Node **head, int count) {
+
+  if (count <= 0) {
+    return;
+  }
+
+  if (*head == NULL) {
+    fputs("Lista está vazia", stderr);
+    return;
+  }
+
+  Node *tmp = *head;
+
+  if (tmp->next == NULL) {
+    *head = NULL;
+    free(tmp);
+    return;
+  }
+
+  while (tmp->next != NULL) {
+    tmp = tmp->next;
+  }
+  tmp->prev->next = NULL;
+  free(tmp);
+  pop_recursive(head, count - 1);
+}
+
 static int cm_pop(char *arg) {
+  if (arg || *arg) {
+    int count = atoi(arg);
+    if (count <= 0) {
+      ERROR("Opção inválida");
+      return -1;
+    }
+    pop_recursive(&head, -1);
+    return 0;
+  }
   pop(&head);
   return 0;
 }
