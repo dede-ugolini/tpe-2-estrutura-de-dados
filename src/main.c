@@ -64,16 +64,18 @@ void pop(Node **head) {
   free(temp);
 }
 
-void printListForward(Node *head) {
+void printListForward(Node *head, int count) {
+  int i = 0;
   Node *temp = head;
   printf("Forward List: ");
   printf("NULL->");
-  while (temp != NULL) {
+  while (temp != NULL && i <= count) {
     printf("%d->", temp->data);
     temp = temp->next;
     if (temp == NULL) {
       printf("NULL");
     }
+    i++;
   }
   printf("\n");
 }
@@ -528,7 +530,16 @@ static int cm_push(char *arg) {
 }
 
 static int cm_print(char *arg) {
-  printListForward(head);
+  if (strlen(arg)) {
+    int count = atoi(arg);
+    if (count <= 0) {
+      ERROR("Precisa ser maior que 0");
+    } else {
+      printListForward(head, count);
+    }
+  } else {
+    printListForward(head, 10);
+  }
   return 0;
 }
 
@@ -536,7 +547,7 @@ static int help(char *arg) {
   printf("Usage of program\n");
   int size = sizeof(command_list) / sizeof(command_list[0]);
   for (int i = 0; i < size; i++) {
-    printf("%s\t%s\t\n", command_list[i].name, command_list[i].doc);
+    printf("%s\t\t%s\n", command_list[i].name, command_list[i].doc);
   }
   return 0;
 }
