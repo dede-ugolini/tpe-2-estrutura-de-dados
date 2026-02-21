@@ -1,6 +1,8 @@
 #include "auto_complete.h"
 #include "colors.h"
 
+#include <ctype.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -62,16 +64,18 @@ void pop(Node **head) {
   free(temp);
 }
 
-void printListForward(Node *head) {
+void printListForward(Node *head, int count) {
+  int i = 0;
   Node *temp = head;
   printf("Forward List: ");
   printf("NULL->");
-  while (temp != NULL) {
+  while (temp != NULL && i <= count) {
     printf("%d->", temp->data);
     temp = temp->next;
     if (temp == NULL) {
       printf("NULL");
     }
+    i++;
   }
   printf("\n");
 }
@@ -242,14 +246,10 @@ void freeAll(Node *head) {
   }
 }
 
-void fill(Node *head) {
+void fill(Node **head, int count) {
   srand(time(NULL));
-  Node *newNode = createNode(rand() % 100);
-  if (head == NULL) {
-    head = newNode;
-  }
-  for (int i = 0; i < 30; i++) {
-    push(&head, rand() % 100);
+  for (int i = 0; i < count; i++) {
+    push(head, rand() % 999);
   }
 }
 
@@ -266,6 +266,8 @@ static int cm_delete(char *arg);
 static int cm_sort(char *arg);
 static int cm_insert(char *arg);
 static int cm_sort(char *arg);
+static int cm_fill(char *arg);
+static int cm_insert(char *arg);
 
 Command command_list[] = {
     {"help", help, "See this message"},
@@ -275,15 +277,186 @@ Command command_list[] = {
     {"push", cm_push, "Adicionar node ao final da lista"},
     {"shift", cm_shift, "Remover um node do inicio da lista"},
     {"unshift", cm_unshift, "Adicionar um node no inicio da lista"},
-    {"fill"},
-    {"delete"},
+    {"fill", cm_fill, "Preencher com números aleatorios"},
+    {"delete", cm_delete, "Inserir um node em uma posição"},
     {"print", cm_print, "Printar lista"},
-    {"sort"},
+    {"sort", cm_sort, "Ordenar lista"},
+    {"insert", cm_insert, "Inserir node em uma posição específica"},
+    {NULL, NULL, NULL},
 };
 
-// FIX: Corrigir erro de segmentation fault
+static int cm_insert(char *arg) {
+  if (!arg || !*arg) {
+    puts("É necessário um argumento");
+    return 1;
+  } else {
+
+    int i = 0, spaces = 0;
+    while (arg[i] != '\0') {
+      if (isspace(arg[i])) {
+        spaces++;
+        i++;
+      } else {
+        i++;
+      }
+    }
+
+    char *string_parsed[spaces];
+
+    char *token = strtok(arg, " \t\n");
+    i = 0;
+
+    while (token) {
+      printf("%s\n", token);
+      token = strtok(NULL, " ");
+      strcpy(string_parsed[i], token);
+      i++;
+    }
+  }
+
+  // dead code
+  if (!arg || !*arg) {
+    puts("è necessário um argumento");
+    return 1;
+  } else {
+
+    int i = 0, spaces = 0;
+    int size = 1;
+
+    while (arg[i] != '\0') {
+      if (isspace(arg[i])) {
+        i++;
+        size++;
+        spaces++;
+      } else {
+        i++;
+        size++;
+      }
+    }
+    puts("ok primeiro while");
+
+    for (i = 0; i < size; i++) {
+      printf("%c", arg[i]);
+    }
+    printf("\n");
+
+    puts("ok primeiro for");
+
+    char arg2[size];
+    strcpy(arg2, arg);
+    char *string_parsed[spaces];
+    char string[size];
+    i = 0;
+    int j = 0, k = 0;
+
+    while (arg2[i] != '\0') {
+      if (isspace(arg2[i])) {
+        strncpy(string_parsed[j], string, k);
+        j++;
+        i++;
+        k = 0;
+      } else {
+        string[k] = arg2[i];
+        k++;
+        i++;
+      }
+    }
+
+    for (i = 0; i < spaces; i++) {
+      printf("%s ", string_parsed[i]);
+    }
+    printf("\n");
+    return 0;
+  }
+
+  printf("%s\n", arg);
+
+  int i = 0;
+  int j = 0;
+  int k = 0;
+
+  char *string_parsed[24];
+  char string[128];
+
+  while (arg[i] != '\0') {
+    if (isspace(arg[i])) {
+      puts("space");
+      string_parsed[j] = string;
+      j++;
+      k = 0;
+      i++;
+    } else {
+      string[k] = arg[i];
+      k++;
+      i++;
+    }
+  }
+  puts("Parsed ok");
+
+  // strtok(char *, const char *)
+
+  /*   int size = sizeof(string_parsed) / sizeof(string_parsed[0]);
+
+    for (int i = 0; i < size; i++) {
+      printf("%s\n", string_parsed[i]);
+    } */
+
+  return 0;
+}
+
+static int cm_fill(char *arg) {
+  if (arg || *arg) {
+    int count = atoi(arg);
+    fill(&head, count);
+    return 0;
+  }
+  fill(&head, 10);
+  return 0;
+}
+
+static int cm_delete(char *arg) {
+  if (!strlen(arg)) {
+    puts("É necessário um argumento");
+    return 1;
+  } else {
+    int index = atoi(arg);
+    deleteAtPosition(&head, index);
+  }
+  return 0;
+}
+
+static void my_sort(Node **head) {
+  if (*head == NULL) {
+    return;
+  }
+  Node *tmp = *head;
+
+  bool swaped;
+  Node *last = NULL;
+  Node *current;
+
+  do {
+    swaped = false;
+    current = *head;
+    while (current->next != last) {
+      if (current->data > current->next->data) {
+        int tmp = current->data;
+        current->data = current->next->data;
+        current->next->data = tmp;
+        swaped = true;
+      }
+      current = current->next;
+    }
+  } while (swaped);
+}
+
+static int cm_my_sort(char *arg) {
+  my_sort(&head);
+  return 0;
+}
+
 static int cm_sort(char *arg) {
-  head = bubbleSortCrescente(head);
+  bubbleSortCrescente(head);
   return 0;
 }
 
@@ -303,8 +476,46 @@ static int cm_shift(char *arg) {
   return 0;
 }
 
+// TODO: Adicionar suporte a head e tail para deixar o algortimo mais eficiente
+// para que não seja mais necessario percorrer toda a lista
+static void pop_recursive(Node **head, int count) {
+
+  if (count <= 0) {
+    return;
+  }
+
+  if (*head == NULL) {
+    fputs("Lista está vazia", stderr);
+    return;
+  }
+
+  Node *tmp = *head;
+
+  if (tmp->next == NULL) {
+    *head = NULL;
+    free(tmp);
+    return;
+  }
+
+  while (tmp->next != NULL) {
+    tmp = tmp->next;
+  }
+  tmp->prev->next = NULL;
+  free(tmp);
+  pop_recursive(head, count - 1);
+}
+
 static int cm_pop(char *arg) {
-  pop(&head);
+  if (!strlen(arg)) {
+    pop(&head);
+    return 0;
+  }
+  int count = atoi(arg);
+  if (count <= 0) {
+    ERROR("Opção inválida");
+    return -1;
+  }
+  pop_recursive(&head, count);
   return 0;
 }
 
@@ -313,28 +524,44 @@ static int cm_push(char *arg) {
     puts("Falta argumento");
     return -1;
   } else {
-    int data = atoi(arg);
-    push(&head, data);
+    int data;
+    char *token = strtok(arg, " ");
+    while (token != NULL) {
+      data = atoi(token);
+      push(&head, data);
+      token = strtok(NULL, " ");
+    }
   }
   return 0;
 }
 
 static int cm_print(char *arg) {
-  printListForward(head);
+  if (strlen(arg)) {
+    int count = atoi(arg);
+    if (count <= 0) {
+      ERROR("Precisa ser maior que 0");
+    } else if (count > 1000) {
+      ERROR("Numero muito alto");
+    } else {
+      printListForward(head, count);
+    }
+  } else {
+    printListForward(head, 10);
+  }
   return 0;
 }
 
 static int help(char *arg) {
   printf("Usage of program\n");
   int size = sizeof(command_list) / sizeof(command_list[0]);
-  for (int i = 0; i < size; i++) {
-    printf("%s\t%s\t\n", command_list[i].name, command_list[i].doc);
+  for (int i = 0; i < size - 1; i++) {
+    printf("%s\t\t%s\n", command_list[i].name, command_list[i].doc);
   }
   return 0;
 }
 
 static int quit(char *arg) {
-  puts("Bye");
+  SUCESS("Bye");
   freeAll(head);
   exit(EXIT_SUCCESS);
 }
