@@ -282,6 +282,7 @@ Command command_list[] = {
     {"print", cm_print, "Printar lista"},
     {"sort", cm_sort, "Ordenar lista"},
     {"insert", cm_insert, "Inserir node em uma posição específica"},
+    {NULL, NULL, NULL},
 };
 
 static int cm_insert(char *arg) {
@@ -523,8 +524,13 @@ static int cm_push(char *arg) {
     puts("Falta argumento");
     return -1;
   } else {
-    int data = atoi(arg);
-    push(&head, data);
+    int data;
+    char *token = strtok(arg, " ");
+    while (token != NULL) {
+      data = atoi(token);
+      push(&head, data);
+      token = strtok(NULL, " ");
+    }
   }
   return 0;
 }
@@ -534,6 +540,8 @@ static int cm_print(char *arg) {
     int count = atoi(arg);
     if (count <= 0) {
       ERROR("Precisa ser maior que 0");
+    } else if (count > 1000) {
+      ERROR("Numero muito alto");
     } else {
       printListForward(head, count);
     }
@@ -546,7 +554,7 @@ static int cm_print(char *arg) {
 static int help(char *arg) {
   printf("Usage of program\n");
   int size = sizeof(command_list) / sizeof(command_list[0]);
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size - 1; i++) {
     printf("%s\t\t%s\n", command_list[i].name, command_list[i].doc);
   }
   return 0;
